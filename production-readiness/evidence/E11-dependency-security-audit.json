@@ -1,0 +1,68 @@
+{
+  "evidence_id": "E11",
+  "audit_name": "CloudNotes Automated Vulnerability & Dependency CVE Audit",
+  "date": "2026-10-08T14:30:00Z",
+  "environment": "CI/CD Security Scanner (pip-audit v2.7.0 + Trivy v0.48.0)",
+  "source_revision": "f0638dd",
+  "supported_check": "S3",
+  "summary": {
+    "total_packages_inspected": 18,
+    "vulnerabilities_found": {
+      "critical": 0,
+      "high": 0,
+      "medium": 1,
+      "low": 0
+    },
+    "blocking_cves": 0
+  },
+  "package_analysis": [
+    {
+      "name": "Flask",
+      "version": "2.2.5",
+      "vulnerabilities": []
+    },
+    {
+      "name": "Werkzeug",
+      "version": "2.2.3",
+      "vulnerabilities": [
+        {
+          "id": "CVE-2023-46136",
+          "severity": "MEDIUM",
+          "description": "Werkzeug parsed large multipart form-data requests slowly, creating potential resource exhaustion under malicious input streams.",
+          "triage_status": "MITIGATED",
+          "mitigation": "CloudNotes configures app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024 (5MB), capping incoming multipart payload size before Werkzeug parsing, neutralising the exhaustion vector. Upgrading to Werkzeug >= 3.0.1 scheduled in next maintenance sprint."
+        }
+      ]
+    },
+    {
+      "name": "Jinja2",
+      "version": "3.1.2",
+      "vulnerabilities": []
+    },
+    {
+      "name": "itsdangerous",
+      "version": "2.1.2",
+      "vulnerabilities": []
+    },
+    {
+      "name": "click",
+      "version": "8.1.7",
+      "vulnerabilities": []
+    }
+  ],
+  "container_image_scan": {
+    "base_image": "python:3.11-slim-bullseye",
+    "os_vulnerabilities": {
+      "critical": 0,
+      "high": 0,
+      "medium": 2,
+      "low": 5
+    },
+    "triage_summary": "All OS packages up to date via apt-get upgrade during image build; no unpatched exploitable CVEs."
+  },
+  "conclusion": {
+    "status": "PASS",
+    "finding": "Zero Critical or High severity CVEs detected. Medium vulnerability triaged and mitigated via application-level upload bounds."
+  },
+  "limits": "Audit represents point-in-time snapshot of dependencies on 2026-10-08; continuous scanning is required in CI pipeline for ongoing zero-day disclosures."
+}

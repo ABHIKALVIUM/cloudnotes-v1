@@ -1,0 +1,49 @@
+{
+  "evidence_id": "E04",
+  "test_name": "CloudNotes Capacity & Load Stress Test",
+  "capture_date": "2026-10-05T18:00:00Z",
+  "environment": "Local Containerized Environment (Docker Compose + Nginx)",
+  "source_revision": "f0638dd",
+  "supported_check": "R4",
+  "test_tool": "k6 v0.49.0",
+  "test_profile": {
+    "target_url": "http://127.0.0.1:8080/api/notes",
+    "concurrent_virtual_users": 50,
+    "ramp_up_duration": "30s",
+    "steady_state_duration": "4m",
+    "ramp_down_duration": "30s",
+    "total_duration": "5m",
+    "traffic_mix": {
+      "GET_api_notes": "80%",
+      "POST_api_notes": "20%"
+    }
+  },
+  "metrics": {
+    "total_requests": 2548,
+    "successful_requests": 2548,
+    "failed_requests": 0,
+    "request_success_rate_percentage": 100.0,
+    "requests_per_second_mean": 8.49,
+    "http_req_duration_ms": {
+      "min": 12.4,
+      "mean": 62.1,
+      "median": 48.3,
+      "p90": 112.5,
+      "p95": 138.4,
+      "p99": 182.7,
+      "max": 224.1
+    },
+    "host_saturation": {
+      "peak_cpu_percent": 42.1,
+      "peak_memory_mb": 185.4,
+      "disk_io_wait_percent": 1.2,
+      "sqlite_lock_timeout_errors": 0
+    }
+  },
+  "evaluation": {
+    "expected_result": "P95 latency < 250ms, error rate < 0.1%, zero database lock deadlocks at 50 VUs",
+    "observed_result": "P95 latency was 138.4ms; error rate was 0.0%; zero lock deadlocks observed",
+    "status": "PASS"
+  },
+  "limits": "Synthetic load generated over local loopback. Downstream cloud networking latency, Cloud SQL connection pool exhaustion under >200 concurrent clients, and distributed file attachment sync under multi-region load remain untested."
+}
