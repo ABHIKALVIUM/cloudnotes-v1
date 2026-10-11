@@ -1,0 +1,19 @@
+[Unit]
+Description=CloudNotes Flask Application Service
+After=network.target postgresql.service
+Wants=postgresql.service
+
+[Service]
+Type=simple
+User=cloudnotes
+Group=cloudnotes
+WorkingDirectory=/home/cloudnotes/cloudnotes
+ExecStart=/usr/local/bin/gunicorn --bind 0.0.0.0:5000 --workers 2 --threads 2 --access-logfile - --error-logfile - app:app
+EnvironmentFile=/home/cloudnotes/cloudnotes/.env
+Restart=always
+RestartSec=3
+KillMode=mixed
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target
