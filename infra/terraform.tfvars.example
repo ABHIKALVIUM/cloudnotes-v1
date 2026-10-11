@@ -1,0 +1,12 @@
+# Example variable values for CloudNotes Infrastructure
+project_id       = "cloudnotes-production"
+region           = "us-central1"
+zone             = "us-central1-a"
+web_cidr         = "10.0.1.0/24"
+app_cidr         = "10.0.2.0/24"
+db_cidr          = "10.0.3.0/24"
+instance_name    = "cloudnotes-app-instance"
+machine_type     = "e2-micro"
+db_instance_name = "cloudnotes-db-instance"
+db_name          = "cloudnotes_prod"
+bucket_name      = "cloudnotes-static-assets-prod-2026"
