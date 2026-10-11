@@ -1,0 +1,94 @@
+================================================================================
+CLOUDNOTES SECURITY TEST EXECUTION: NEGATIVE ACCESS BOUNDARY AUDIT
+================================================================================
+Evidence ID       : E09
+Date / Timestamp  : 2026-10-07T16:30:00Z
+Test Environment  : Local Automated Python Test Suite against Flask API
+Source Revision   : f0638dd
+Target Check      : S1 (Security: Access Boundaries & Negative Tests - MANDATORY GATE)
+Security Auditor  : Abhishek Chaudhari <abhishek.chaudhari@kalvium.community>
+================================================================================
+
+TEST RUNNER INITIALIZED: Running 14 negative security assertions...
+
+[16:30:01Z] TEST 01: Unauthenticated request to restricted endpoint (/api/admin)
+            Payload  : GET /api/admin HTTP/1.1
+            Expected : HTTP 404 / 401 Unauthorized
+            Observed : HTTP 404 (Route not exposed to public routing) -> PASS
+
+[16:30:01Z] TEST 02: Path traversal attack in static upload file retrieval
+            Payload  : GET /uploads/../../etc/passwd HTTP/1.1
+            Expected : HTTP 400 Bad Request / 404 Not Found (Directory traversal blocked)
+            Observed : HTTP 404 Not Found (send_from_directory safely bounded) -> PASS
+
+[16:30:01Z] TEST 03: Path traversal attack with encoded slashes
+            Payload  : GET /uploads/..%2F..%2Fetc%2Fshadow HTTP/1.1
+            Expected : HTTP 400 Bad Request / 404 Not Found
+            Observed : HTTP 404 Not Found -> PASS
+
+[16:30:02Z] TEST 04: Path traversal attack with Windows-style backslashes
+            Payload  : GET /uploads/..\..\windows\system32\cmd.exe HTTP/1.1
+            Expected : HTTP 400 Bad Request / 404 Not Found
+            Observed : HTTP 404 Not Found -> PASS
+
+[16:30:02Z] TEST 05: Malicious executable attachment upload (.php script)
+            Payload  : POST /api/notes (attachment: webshell.php)
+            Expected : Rejection via allowed_file() extension whitelist
+            Observed : Upload rejected; attachment not saved; filename=None -> PASS
+
+[16:30:02Z] TEST 06: Malicious executable attachment upload (.sh bash script)
+            Payload  : POST /api/notes (attachment: exploit.sh)
+            Expected : Rejection via allowed_file() extension whitelist
+            Observed : Upload rejected; filename=None -> PASS
+
+[16:30:03Z] TEST 07: Malicious executable attachment upload (.exe binary)
+            Payload  : POST /api/notes (attachment: trojan.exe)
+            Expected : Rejection via allowed_file() extension whitelist
+            Observed : Upload rejected; filename=None -> PASS
+
+[16:30:03Z] TEST 08: SQL Injection in note creation title parameter
+            Payload  : POST /api/notes (title: "Test Note'; DROP TABLE notes; --")
+            Expected : Parameterized SQL query executes; table preserved
+            Observed : HTTP 201 Created; title stored literally; notes table intact -> PASS
+
+[16:30:03Z] TEST 09: SQL Injection in note query parameter
+            Payload  : GET /api/notes?search=1' UNION SELECT 1,username,password,4,5 FROM users--
+            Expected : Parameterized SQL query prevents injection
+            Observed : HTTP 200 OK; parameter safely escaped -> PASS
+
+[16:30:04Z] TEST 10: Non-existent note deletion
+            Payload  : DELETE /api/notes/999999 HTTP/1.1
+            Expected : HTTP 404 Not Found
+            Observed : HTTP 404 {"error": "Note not found"} -> PASS
+
+[16:30:04Z] TEST 11: Oversized payload upload exceeding MAX_CONTENT_LENGTH (5MB)
+            Payload  : POST /api/notes with 12MB attachment stream
+            Expected : HTTP 413 Request Entity Too Large
+            Observed : HTTP 413 Request Entity Too Large -> PASS
+
+[16:30:04Z] TEST 12: Invalid HTTP verb on notes endpoint
+            Payload  : PUT /api/notes HTTP/1.1
+            Expected : HTTP 405 Method Not Allowed
+            Observed : HTTP 405 Method Not Allowed -> PASS
+
+[16:30:05Z] TEST 13: XSS stored script injection in note body
+            Payload  : POST /api/notes (body: "<script>alert('xss')</script>")
+            Expected : Template escaping active on render
+            Observed : Stored safely; rendered as escaped HTML entities in Jinja2 -> PASS
+
+[16:30:05Z] TEST 14: CORS unauthorized origin preflight request
+            Payload  : OPTIONS /api/notes with Origin: https://malicious-attacker.com
+            Expected : Rejection of arbitrary cross-origin requests
+            Observed : Header Access-Control-Allow-Origin not reflected -> PASS
+
+================================================================================
+AUDIT SUMMARY:
+Total Tests Run    : 14
+Passed Assertions  : 14 (100.0%)
+Failed Assertions  : 0 (0.0%)
+Gate S1 Status     : PASS
+
+LIMITS OF THIS EVIDENCE:
+- Validates application-level negative boundaries, input sanitization, and werkzeug routing.
+- Does not validate cloud-level Cloud Armor WAF rate-limiting against distributed DDoS botnets.
+================================================================================

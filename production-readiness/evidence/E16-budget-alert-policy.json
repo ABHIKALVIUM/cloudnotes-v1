@@ -1,0 +1,50 @@
+{
+  "evidence_id": "E16",
+  "policy_name": "CloudNotes GCP Billing Budget & Alert Response Configuration",
+  "assessment_date": "2026-10-09T17:00:00Z",
+  "source_revision": "f0638dd",
+  "supported_check": "C3",
+  "billing_account_id": "01A2B3-4C5D6E-7F8A9B",
+  "monitored_project": "cloudnotes-staging-proj",
+  "budget_amount": {
+    "specified_amount": {
+      "currency_code": "USD",
+      "units": "100"
+    }
+  },
+  "threshold_rules": [
+    {
+      "threshold_percent": 0.50,
+      "spend_basis": "CURRENT_SPEND",
+      "action": "EMAIL_NOTIFICATION",
+      "recipient_roles": ["BILLING_ACCOUNT_ADMIN", "PROJECT_OWNER"],
+      "description": "50% budget consumed ($50.00). Informational notification sent to engineering team."
+    },
+    {
+      "threshold_percent": 0.80,
+      "spend_basis": "CURRENT_SPEND",
+      "action": "EMAIL_AND_SLACK_WEBHOOK",
+      "recipient_roles": ["PROJECT_OWNER"],
+      "webhook_url": "https://hooks.slack.com/services/T00/B00/REDACTED",
+      "description": "80% budget consumed ($80.00). SRE on-call investigates unexpected instance auto-scaling or disk growth."
+    },
+    {
+      "threshold_percent": 100.0,
+      "spend_basis": "FORECASTED_SPEND",
+      "action": "CRITICAL_WEBHOOK_AND_PAGE",
+      "pubsub_topic": "projects/cloudnotes-staging-proj/topics/billing-budget-exceeded",
+      "description": "100% budget threshold ($100.00) breached or forecasted. Triggers Cloud Functions automation to cap non-production autoscaling."
+    }
+  ],
+  "financial_ownership": {
+    "primary_budget_owner": "Abhishek Chaudhari",
+    "email": "abhishek.chaudhari@kalvium.community",
+    "department": "Platform Engineering / Kalvium Community",
+    "review_cadence": "Monthly financial retrospective"
+  },
+  "evaluation_and_limits": {
+    "expected_result": "Formalized budget thresholds, alert notification routing, and designated budget owner.",
+    "observed_result": "Policy configuration document committed and financial owner assigned.",
+    "limits": "Local evaluation verified policy syntax and ownership. Live GCP Billing API webhook triggering of automated project billing caps was NOT executed in production to avoid cloud billing dependencies. Scored as PARTIAL (1 pt)."
+  }
+}
