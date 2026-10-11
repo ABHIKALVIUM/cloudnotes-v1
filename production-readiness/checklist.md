@@ -2,6 +2,7 @@
 
 **Assessment Date:** 2026-10-10  
 **Reviewed Base Revision:** `f0638dd`  
+**Assessment Commit:** `60bdbb4`  
 **Assessment Branch:** `assessment/production-readiness`  
 **Assessment Lead / Assessor:** Abhishek Chaudhari (`abhishek.chaudhari@kalvium.community`)  
 **Deployment Version:** `v1.0.0-staging`  

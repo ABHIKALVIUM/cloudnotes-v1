@@ -7,11 +7,15 @@
 
 ## 1. Review Header & Metadata
 * **Reviewed Source / Base Commit:** `f0638dd0d62649d7750688301fb625e4072eace3`
+* **Assessment Commit:** `60bdbb45b88034c1976b274c7e6f05fa481332e4`
 * **Assessment Branch:** `assessment/production-readiness`
 * **Assessment Date:** 2026-10-10
 * **Review Lead / Assessor:** Abhishek Chaudhari (`abhishek.chaudhari@kalvium.community`)
 * **Environment:** Local Containerized Multi-Instance Stack (Docker Compose / k3s, Nginx Reverse Proxy, SQLite/PostgreSQL)
-* **Declared Release Scope:** Internal simulated classroom demonstration and staging environment using mock notes and dummy attachments ($< 50$ req/s).
+* **Declared Release Scope:** Internal simulated classroom demonstration and staging environment using mock notes and dummy attachments (< 50 req/s).
+* **Workload & Data Assumptions:** 10–20 req/s steady-state, peak 50 req/s, < 500 simulated users, max 5 MB attachments.
+* **Target SLO / RTO / RPO:** Availability $\ge 99.5\%$, P95 Latency $< 250$ms, RTO $< 30$ min, RPO $< 60$ min.
+* **Post-Review Changes & Affected Evidence:** None. This assessment branch introduces only documentation and sanitized evidence; application source code remains identical to reviewed revision `f0638dd`.
 * **Explicit Boundary & Limits:** Local replica failover does NOT establish cross-region cloud failover; configured automated backup archiving does NOT prove database restore or data integrity; local testing cannot prove production Cloud Armor DDoS resilience or live GCP billing API webhook execution.
 
 ---
