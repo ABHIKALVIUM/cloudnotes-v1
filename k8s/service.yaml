@@ -1,0 +1,15 @@
+# k8s/service.yaml — a stable address for your pods
+apiVersion: v1
+kind: Service
+metadata:
+  name: cloudnotes
+  labels:
+    app: cloudnotes
+spec:
+  type: NodePort # free, works on any local cluster
+  selector:
+    app: cloudnotes # MUST match the pod labels
+  ports:
+  - port: 80 # the Service port
+    targetPort: 5000 # the container's port
+    nodePort: 30080 # a fixed port on the node (optional)
